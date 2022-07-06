@@ -1,4 +1,4 @@
-module github.com/kiven-li/golua
+module github.com/yuin/gopher-lua
 
 go 1.17
 
