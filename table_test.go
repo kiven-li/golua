@@ -243,8 +243,8 @@ func TestTableBigKey(t *testing.T) {
 	for i := 0; i < 64; i++ {
 		tbl.RawSetInt(i, LString(strconv.Itoa(i))) // in array, except 0
 	}
-	tbl.RawSetInt(10086, LString("10086")) // in dic
-	errorIfNotEqual(t, LString("10086"), tbl.RawGetH(LNumber(10086)))
+	tbl.RawSetInt(50049111, LString("50049111")) // in dic
+	errorIfNotEqual(t, LString("50049111"), tbl.RawGetH(LNumber(50049111)))
 
 	tbl.RawSetInt(65, LString("65")) // in array, and will move 67 in to array
 	errorIfNotEqual(t, LString("65"), tbl.RawGetInt(65))

@@ -274,7 +274,7 @@ func computeSizes(nums []uint, narray *uint) uint {
 }
 
 func (tb *LTable) resize(exKey LNumber) {
-	nums := [26]uint{}
+	nums := [27]uint{}
 	nasize := tb.numUseArray(nums[:])
 	totaluse := nasize
 	tu, au := tb.numUseHash(nums[:])
