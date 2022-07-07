@@ -1,6 +1,6 @@
 package lua
 
-const FdefaultArrayCap = 32
+const defaultArrayCap = 32
 const defaultHashCap = 32
 
 type lValueArraySorter struct {
@@ -281,6 +281,15 @@ func (tb *LTable) RawGet(key LValue) LValue {
 
 // RawGetInt returns an LValue at position `key` without __index metamethod.
 func (tb *LTable) RawGetInt(key int) LValue {
+	if key < 1 || key >= MaxArrayIndex {
+		if tb.dict == nil {
+			return LNil
+		}
+		if v, ok := tb.dict[LNumber(key)]; ok {
+			return v
+		}
+		return LNil
+	}
 	if tb.array == nil {
 		return LNil
 	}
