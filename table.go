@@ -1,6 +1,6 @@
 package lua
 
-const defaultArrayCap = 32
+const FdefaultArrayCap = 32
 const defaultHashCap = 32
 
 type lValueArraySorter struct {
@@ -148,7 +148,22 @@ func (tb *LTable) RawSet(key LValue, value LValue) {
 	switch v := key.(type) {
 	case LNumber:
 		if isArrayKey(v) {
-			tb.RawSetInt(int(v), value)
+			if tb.array == nil {
+				tb.array = make([]LValue, 0, defaultArrayCap)
+			}
+			index := int(v) - 1
+			alen := len(tb.array)
+			switch {
+			case index == alen:
+				tb.array = append(tb.array, value)
+			case index > alen:
+				for i := 0; i < (index - alen); i++ {
+					tb.array = append(tb.array, LNil)
+				}
+				tb.array = append(tb.array, value)
+			case index < alen:
+				tb.array[index] = value
+			}
 			return
 		}
 	case LString:
@@ -237,7 +252,14 @@ func (tb *LTable) RawGet(key LValue) LValue {
 	switch v := key.(type) {
 	case LNumber:
 		if isArrayKey(v) {
-			return tb.RawGetInt(int(v))
+			if tb.array == nil {
+				return LNil
+			}
+			index := int(v) - 1
+			if index >= len(tb.array) {
+				return LNil
+			}
+			return tb.array[index]
 		}
 	case LString:
 		if tb.strdict == nil {
@@ -259,14 +281,6 @@ func (tb *LTable) RawGet(key LValue) LValue {
 
 // RawGetInt returns an LValue at position `key` without __index metamethod.
 func (tb *LTable) RawGetInt(key int) LValue {
-	if key < 1 || key >= MaxArrayIndex {
-		if tb.dict == nil {
-			return LNil
-		}
-		if v, ok := tb.dict[LNumber(key)]; ok {
-			return v
-		}
-	}
 	if tb.array == nil {
 		return LNil
 	}
